@@ -28,6 +28,8 @@ option(ONNX_DISABLE_EXCEPTIONS "Disable exception handling." OFF)
 option(ONNX_DISABLE_STATIC_REGISTRATION "Disable static registration for onnx operator schemas." OFF)
 option(ONNX_USE_UNITY_BUILD "Enable Unity (Jumbo) build for" OFF)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 if(NOT DEFINED ONNX_ML)
   if(DEFINED ENV{ONNX_ML})
     set(DEFAULT_ONNX_ML $ENV{ONNX_ML})
@@ -279,11 +281,9 @@ endif()
 # abseil build would fail if ONNX_WERROR is on.
 if(ONNX_WERROR)
   if(MSVC)
-    string(APPEND CMAKE_CXX_FLAGS " /WX")
-    string(APPEND CMAKE_C_FLAGS " /WX")
+    add_compile_options("/WX")
   else()
-    string(APPEND CMAKE_CXX_FLAGS " -Werror")
-    string(APPEND CMAKE_C_FLAGS " -Werror -Wno-error=incompatible-pointer-types")
+    add_compile_options("-Werror")
   endif()
 endif()
 
@@ -480,15 +480,9 @@ target_include_directories(onnx_proto PUBLIC
 if (MSVC)
   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     set(EXTRA_FLAGS
-          "-Wno-implicit-function-declaration"
-          "-Wno-undefined-inline"
-          "-Wno-incompatible-pointer-types"
-          "-Wno-dllexport-explicit-instantiation-decl"
           "-Wno-microsoft-unqualified-friend"
           "-Wno-absolute-value"
-          "-Wno-unused-variable"
           "-Wno-unknown-argument"
-          "-Wno-writable-strings"
           "-Qunused-arguments")
   else()
     set(EXTRA_FLAGS "")

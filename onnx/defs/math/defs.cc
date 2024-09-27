@@ -956,6 +956,8 @@ static const char* Clip_ver13_doc = R"DOC(
 Clip operator limits the given input within an interval. The interval is
 specified by the inputs 'min' and 'max'. They default to
 numeric_limits::lowest() and numeric_limits::max(), respectively.
+When 'min' is greater than 'max', the clip operator sets all the 'input' values to
+the value of 'max'. Thus, this is equivalent to 'Min(max, Max(input, min))'.
 )DOC";
 
 bool BuildContextDependentFunctionBodyClip(
@@ -1479,7 +1481,7 @@ ONNX_OPERATOR_SET_SCHEMA(
               fail_shape_inference("K input must be a one-dimensional tensor of size 1.");
             }
             if (k->data_type() == TensorProto::INT64) {
-              const auto& data = ParseData<int64_t>(k);
+              const auto data = ParseData<int64_t>(k);
               k_value = data[0];
             } else {
               fail_shape_inference("K input must be of type int64.");
